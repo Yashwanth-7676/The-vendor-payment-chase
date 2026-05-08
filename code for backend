@@ -1,0 +1,69 @@
+const express = require('express');
+const cors = require('cors');
+const twilio = require('twilio');
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname));
+
+const accountSid = 'AC1c6e62ce198b8672a897056e89240213';
+const authToken = 'fde6317fedb2d25e64f3cbca0013b513';
+const twilioNumber = '+17015437007';
+
+const client = twilio(accountSid, authToken);
+
+app.post('/send-sms', async (req, res) => {
+  try {
+    const { receiverNumber, receiverNumbers, message } = req.body;
+    const numbers = Array.isArray(receiverNumbers) ? receiverNumbers : [receiverNumber];
+    const validNumbers = numbers
+      .map(number => String(number || '').replace(/\D/g, ''))
+      .filter(number => /^\d{10}$/.test(number));
+
+    if (!validNumbers.length) {
+      return res.json({
+        success: false,
+        error: 'Please provide at least one valid mobile number.'
+      });
+    }
+
+    if (!message || !String(message).trim()) {
+      return res.json({
+        success: false,
+        error: 'Please provide a message.'
+      });
+    }
+
+    const smsResults = await Promise.all(
+      validNumbers.map(number =>
+        client.messages.create({
+          body: String(message).trim(),
+          from: twilioNumber,
+          to: `+91${number}`
+        })
+      )
+    );
+
+    res.json({
+      success: Boolean(smsResults.length),
+      sent: smsResults.length,
+      sids: smsResults.map(result => result.sid)
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(`${__dirname}/index.html`);
+});
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
