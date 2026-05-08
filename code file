@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vendor Payment Chase</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+  }
+
+  body {
+    background: #f8fafc;
+    color: #000000;
+  }
+
+  /* Logo Page */
+  .logo-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: opacity 1s ease-out;
+  }
+
+  .logo-page.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .logo-content {
+    text-align: center;
+    color: white;
+  }
+
+  .logo-text {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .logo-subtitle {
+    font-size: 18px;
+    opacity: 0.9;
+  }
+
+  /* Auth Page */
+  .auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .auth-container {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .auth-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #000000;
+  }
+
+  .auth-form {
+    display: grid;
+    gap: 16px;
+  }
+
+  .auth-form-group {
+    display: grid;
+    gap: 8px;
+  }
+
+  .auth-form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .auth-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #000000;
+    outline: none;
+  }
+
+  .auth-input:focus {
+    border-color: #667eea;
+  }
+
+  .auth-button {
+    width: 100%;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: #667eea;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .auth-button:hover {
+    background: #5568d3;
+  }
+
+  .auth-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  .auth-toggle {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #000000;
+  }
+
+  .auth-toggle a {
+    color: #667eea;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .auth-message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  .auth-message.error {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .auth-message.success {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  /* Layout */
+  .app {
+    display: flex;
+    height: 100vh;
+  }
+
+  .app.hidden {
+    display: none;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    padding: 20px;
+  }
+
+  .logo {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 30px;
+  }
+
+  .nav-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #000000;
+  }
+
+  .nav-item:hover {
+    background: #f1f5f9;
+  }
+
+  .nav-item.active {
+    background: #2563eb;
+    color: white;
+  }
+
+  /* Main */
+  .main {
+    flex: 1;
+    padding: 25px;
+  }
+
+  /* Topbar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  .search {
+    padding: 10px 14px;
+    width: 300px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    outline: none;
+  }
+
+  /* KPI Cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+  }
+
+  .card {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .card h3 {
+    font-size: 14px;
+    color: #000000;
+  }
+
+  .card p {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 10px;
+    color: #000000;
+  }
+
+  /* Table */
+  .table {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  td {
+    color: #000000;
+  }
+
+  th {
+    background: #f8fafc;
+    color: #000000;
+  }
+
+  tr {
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .status {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  .paid {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .pending {
+    background: #fef9c3;
+    color: #ca8a04;
+  }
+
+  .overdue {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  /* Hidden section */
+  .section {
+    display: none;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  .sms-form {
+    display: grid;
+    gap: 16px;
+    max-width: 520px;
+  }
+
+  .entry-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .entry-form .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-group {
+    display: grid;
+    gap: 8px;
+  }
+
+  .form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #000000;
+    outline: none;
+  }
+
+  .form-textarea {
+    min-height: 130px;
+    resize: vertical;
+  }
+
+  .send-button {
+    width: fit-content;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .send-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  .form-result {
+    min-height: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #16a34a;
+  }
+
+  .sms-result {
+    min-height: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .sms-result.success {
+    color: #16a34a;
+  }
+
+  .sms-result.error {
+    color: #dc2626;
+  }
+
+</style>
+</head>
+
+<body>
+
+<!-- Logo Page -->
+<div class="logo-page" id="logoPage">
+  <div class="logo-content">
+    <div class="logo-text">Vendor Chase</div>
+    <div class="logo-subtitle">Payment Management System</div>
+  </div>
+</div>
+
+<div class="app hidden" id="mainApp">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">Vendor Chase</div>
+
+    <div class="nav-item active" data-section="dashboard">Dashboard</div>
+    <div class="nav-item" data-section="vendors">Vendors</div>
+    <div class="nav-item" data-section="invoices">Invoices</div>
+    <div class="nav-item" data-section="payments">Payments</div>
+    <div class="nav-item" data-section="overdue">Overdue</div>
+    <div class="nav-item" data-section="insights">AI Insights</div>
+    <div class="nav-item" data-section="notifications">Notifications</div>
+    <div class="nav-item" data-section="sms">Send Message</div>
+    <div class="nav-item" data-section="settings">Settings</div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Dashboard Section -->
+    <div class="section active" id="dashboard">
+      <!-- Topbar -->
+      <div class="topbar">
+        <input class="search" placeholder="Search invoices, vendors..." />
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="cards">
+
+        <div class="card">
+          <h3>Total Vendors</h3>
+          <p id="dashboardTotalVendors">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Pending Payments</h3>
+          <p>₹12.4L</p>
+        </div>
+
+        <div class="card">
+          <h3>Overdue Invoices</h3>
+          <p id="dashboardOverdueInvoices">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Paid This Month</h3>
+          <p>₹42L</p>
+        </div>
+
+      </div>
+
+      <!-- Table -->
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Vendor</th>
+              <th>Invoice</th>
+              <th>Amount</th>
+              <th>Due Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="dashboardTableBody">
+            <tr>
+              <td>ABC Supplies</td>
+              <td>#INV-101</td>
+              <td>₹45,000</td>
+              <td>12 May</td>
+              <td><span class="status paid">Paid</span></td>
+            </tr>
+
+            <tr>
+              <td>Tech Solutions</td>
+              <td>#INV-102</td>
+              <td>₹1,20,000</td>
+              <td>10 May</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+
+            <tr>
+              <td>Global Traders</td>
+              <td>#INV-103</td>
+              <td>₹78,000</td>
+              <td>02 May</td>
+              <td><span class="status overdue">Overdue</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Vendors Section -->
+    <div class="section" id="vendors">
+      <div class="topbar">
+        <h2>Vendors Management</h2>
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+      <div class="card" style="margin-bottom: 20px;">
+        <h3>Add Vendor</h3>
+        <form class="entry-form" id="addVendorForm" style="margin-top: 16px;">
+          <div class="form-group">
+            <label for="vendorName">Vendor Name</label>
+            <input class="form-input" id="vendorName" type="text" placeholder="Enter vendor name" required />
+          </div>
+          <div class="form-group">
+            <label for="vendorContact">Contact Email</label>
+            <input class="form-input" id="vendorContact" type="email" placeholder="vendor@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="vendorInvoices">Total Invoices</label>
+            <input class="form-input" id="vendorInvoices" type="number" min="0" placeholder="0" required />
+          </div>
+          <div class="form-group">
+            <label for="vendorBalance">Outstanding Balance</label>
+            <input class="form-input" id="vendorBalance" type="number" min="0" placeholder="Amount in rupees" required />
+          </div>
+          <div class="form-group full-width">
+            <label for="vendorStatus">Status</label>
+            <select class="form-input" id="vendorStatus" required>
+              <option value="Active">Active</option>
+              <option value="At Risk">At Risk</option>
+            </select>
+          </div>
+          <button class="send-button" type="submit">Add Vendor</button>
+          <div class="form-result" id="vendorResult"></div>
+        </form>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Vendor Name</th>
+              <th>Contact</th>
+              <th>Total Invoices</th>
+              <th>Outstanding Balance</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="vendorsTableBody">
+            <tr>
+              <td>ABC Supplies</td>
+              <td>contact@abc.com</td>
+              <td>12</td>
+              <td>₹2,45,000</td>
+              <td><span class="status paid">Active</span></td>
+            </tr>
+            <tr>
+              <td>Tech Solutions</td>
+              <td>sales@tech.com</td>
+              <td>8</td>
+              <td>₹3,75,000</td>
+              <td><span class="status pending">Active</span></td>
+            </tr>
+            <tr>
+              <td>Global Traders</td>
+              <td>info@global.com</td>
+              <td>15</td>
+              <td>₹1,85,000</td>
+              <td><span class="status overdue">At Risk</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Invoices Section -->
+    <div class="section" id="invoices">
+      <div class="topbar">
+        <h2>Invoices</h2>
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+      <div class="card" style="margin-bottom: 20px;">
+        <h3>Upload Invoice</h3>
+        <form class="entry-form" id="uploadInvoiceForm" style="margin-top: 16px;">
+          <div class="form-group">
+            <label for="invoiceNumber">Invoice No.</label>
+            <input class="form-input" id="invoiceNumber" type="text" placeholder="#INV-105" required />
+          </div>
+          <div class="form-group">
+            <label for="invoiceVendor">Vendor</label>
+            <input class="form-input" id="invoiceVendor" type="text" placeholder="Vendor name" required />
+          </div>
+          <div class="form-group">
+            <label for="invoiceAmount">Amount</label>
+            <input class="form-input" id="invoiceAmount" type="number" min="0" placeholder="Amount in rupees" required />
+          </div>
+          <div class="form-group">
+            <label for="invoiceFile">Invoice File</label>
+            <input class="form-input" id="invoiceFile" type="file" accept=".pdf,.png,.jpg,.jpeg" />
+          </div>
+          <div class="form-group">
+            <label for="invoiceIssueDate">Issue Date</label>
+            <input class="form-input" id="invoiceIssueDate" type="date" required />
+          </div>
+          <div class="form-group">
+            <label for="invoiceDueDate">Due Date</label>
+            <input class="form-input" id="invoiceDueDate" type="date" required />
+          </div>
+          <div class="form-group full-width">
+            <label for="invoiceStatus">Status</label>
+            <select class="form-input" id="invoiceStatus" required>
+              <option value="Pending">Pending</option>
+              <option value="Paid">Paid</option>
+              <option value="Overdue">Overdue</option>
+            </select>
+          </div>
+          <button class="send-button" type="submit">Upload Invoice</button>
+          <div class="form-result" id="invoiceResult"></div>
+        </form>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Invoice No.</th>
+              <th>Vendor</th>
+              <th>Amount</th>
+              <th>Issue Date</th>
+              <th>Due Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="invoicesTableBody">
+            <tr>
+              <td>#INV-101</td>
+              <td>ABC Supplies</td>
+              <td>₹45,000</td>
+              <td>05 May</td>
+              <td>12 May</td>
+              <td><span class="status paid">Paid</span></td>
+            </tr>
+            <tr>
+              <td>#INV-102</td>
+              <td>Tech Solutions</td>
+              <td>₹1,20,000</td>
+              <td>03 May</td>
+              <td>10 May</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>#INV-103</td>
+              <td>Global Traders</td>
+              <td>₹78,000</td>
+              <td>01 May</td>
+              <td>02 May</td>
+              <td><span class="status overdue">Overdue</span></td>
+            </tr>
+            <tr>
+              <td>#INV-104</td>
+              <td>ABC Supplies</td>
+              <td>₹62,000</td>
+              <td>04 May</td>
+              <td>15 May</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Payments Section -->
+    <div class="section" id="payments">
+      <div class="topbar">
+        <h2>Payment History</h2>
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Payment ID</th>
+              <th>Vendor</th>
+              <th>Amount</th>
+              <th>Payment Date</th>
+              <th>Method</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#PAY-501</td>
+              <td>ABC Supplies</td>
+              <td>₹45,000</td>
+              <td>12 May 2026</td>
+              <td>Bank Transfer</td>
+              <td><span class="status paid">Completed</span></td>
+            </tr>
+            <tr>
+              <td>#PAY-502</td>
+              <td>Tech Solutions</td>
+              <td>₹1,20,000</td>
+              <td>11 May 2026</td>
+              <td>Check</td>
+              <td><span class="status paid">Completed</span></td>
+            </tr>
+            <tr>
+              <td>#PAY-503</td>
+              <td>Global Traders</td>
+              <td>₹78,000</td>
+              <td>Expected: 08 May</td>
+              <td>Bank Transfer</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Overdue Section -->
+    <div class="section" id="overdue">
+      <div class="topbar">
+        <h2>Overdue Invoices</h2>
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Vendor</th>
+              <th>Invoice</th>
+              <th>Amount</th>
+              <th>Due Date</th>
+              <th>Days Overdue</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Global Traders</td>
+              <td>#INV-103</td>
+              <td>₹78,000</td>
+              <td>02 May</td>
+              <td>5 days</td>
+              <td><span class="status overdue">Overdue</span></td>
+            </tr>
+            <tr>
+              <td>ABC Supplies</td>
+              <td>#INV-105</td>
+              <td>₹55,000</td>
+              <td>04 May</td>
+              <td>3 days</td>
+              <td><span class="status overdue">Overdue</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AI Insights Section -->
+    <div class="section" id="insights">
+      <div class="topbar">
+        <h2>AI Insights</h2>
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>Recommended Actions</h3>
+          <p id="recommendedActions">0 actions</p>
+        </div>
+        <div class="card">
+          <h3>Risk Score</h3>
+          <p id="riskScore">Low</p>
+        </div>
+        <div class="card">
+          <h3>Pending Invoices</h3>
+          <p id="pendingInvoiceCount">0</p>
+        </div>
+        <div class="card">
+          <h3>Overdue Amount</h3>
+          <p>₹2.5L/year</p>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Insight</th>
+              <th>Vendor</th>
+              <th>Recommendation</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody id="insightsTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="section" id="notifications">
+      <div class="topbar">
+        <h2>Notifications</h2>
+        <div>ðŸ”” &nbsp; ðŸ‘¤</div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>Total Alerts</h3>
+          <p id="notificationTotal">0</p>
+        </div>
+        <div class="card">
+          <h3>Urgent</h3>
+          <p id="notificationUrgent">0</p>
+        </div>
+        <div class="card">
+          <h3>Reminders</h3>
+          <p id="notificationReminders">0</p>
+        </div>
+        <div class="card">
+          <h3>Channel</h3>
+          <p>SMS + Email</p>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Vendor</th>
+              <th>Message</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody id="notificationsTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Send Message Section -->
+    <div class="section" id="sms">
+      <div class="topbar">
+        <h2>Send Message</h2>
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+      <div class="card">
+        <form class="sms-form" id="smsForm">
+          <div class="form-group">
+            <label for="receiverNumber">Mobile Numbers</label>
+            <textarea
+              class="form-textarea"
+              id="receiverNumber"
+              name="receiverNumber"
+              placeholder="Enter mobile numbers separated by comma, space, or new line"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="smsMessage">Message</label>
+            <textarea
+              class="form-textarea"
+              id="smsMessage"
+              name="message"
+              placeholder="Type your SMS message"
+              required
+            ></textarea>
+          </div>
+
+          <button class="send-button" id="sendSmsButton" type="submit">Send Message</button>
+          <div class="sms-result" id="smsResult"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="section" id="settings">
+      <div class="topbar">
+        <h2>Settings</h2>
+        <div>🔔 &nbsp; 👤</div>
+      </div>
+      <div class="card" style="margin-bottom: 20px;">
+        <h3>Manage Settings</h3>
+        <form class="entry-form" id="settingsForm" style="margin-top: 16px;">
+          <div class="form-group">
+            <label for="settingsEmail">Email</label>
+            <input class="form-input" id="settingsEmail" type="email" value="admin@vendorchase.com" required />
+          </div>
+          <div class="form-group">
+            <label for="settingsCompany">Company</label>
+            <input class="form-input" id="settingsCompany" type="text" value="ABC Corporation" required />
+          </div>
+          <div class="form-group">
+            <label for="settingsReminder">Auto Reminder Days</label>
+            <input class="form-input" id="settingsReminder" type="number" min="1" value="5" required />
+          </div>
+          <div class="form-group">
+            <label for="settingsPaymentMethod">Payment Method</label>
+            <select class="form-input" id="settingsPaymentMethod">
+              <option selected>Bank Transfer</option>
+              <option>UPI</option>
+              <option>Cheque</option>
+              <option>Card</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="settingsApiAccess">API Access</label>
+            <select class="form-input" id="settingsApiAccess">
+              <option selected>Enabled</option>
+              <option>Disabled</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="settingsDataRetention">Data Retention</label>
+            <select class="form-input" id="settingsDataRetention">
+              <option>3 years</option>
+              <option selected>7 years</option>
+              <option>10 years</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label>Notifications</label>
+            <div style="display: flex; gap: 18px; flex-wrap: wrap; color: #000000;">
+              <label><input type="checkbox" id="notifyEmail" checked /> Email</label>
+              <label><input type="checkbox" id="notifySms" checked /> SMS</label>
+              <label><input type="checkbox" id="notifyDashboard" checked /> Dashboard</label>
+            </div>
+          </div>
+          <button class="send-button" type="submit">Save Settings</button>
+          <div class="form-result" id="settingsResult"></div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Account Settings</h3>
+        <p style="margin-top: 20px; font-size: 14px; color: #000000;">
+          <strong>Email:</strong> admin@vendorchase.com<br><br>
+          <strong>Company:</strong> ABC Corporation<br><br>
+          <strong>Timezone:</strong> IST (UTC+5:30)<br><br>
+          <strong>Currency:</strong> Indian Rupees (₹)<br><br>
+          <strong>Notifications:</strong> Email, SMS, Dashboard
+        </p>
+      </div>
+      <div class="card" style="margin-top: 20px;">
+        <h3>System Settings</h3>
+        <p style="margin-top: 20px; font-size: 14px; color: #000000;">
+          <strong>Auto-reminder:</strong> 5 days before due date<br><br>
+          <strong>Payment Method:</strong> Bank Transfer<br><br>
+          <strong>Data Retention:</strong> 7 years<br><br>
+          <strong>API Access:</strong> Enabled<br><br>
+          <strong>Last Backup:</strong> 07 May 2026
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Navigation functionality
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.section');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      const sectionId = this.getAttribute('data-section');
+      
+      // Remove active class from all nav items and sections
+      navItems.forEach(nav => nav.classList.remove('active'));
+      sections.forEach(section => section.classList.remove('active'));
+      
+      // Add active class to clicked nav item and corresponding section
+      this.classList.add('active');
+      document.getElementById(sectionId).classList.add('active');
+
+      if (sectionId === 'notifications') {
+        updateNotifications();
+      }
+
+      if (sectionId === 'insights') {
+        updateAiInsights();
+      }
+
+      if (sectionId === 'dashboard') {
+        updateDashboard();
+      }
+    });
+  });
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatRupees(value) {
+    return `₹${Number(value || 0).toLocaleString('en-IN')}`;
+  }
+
+  function formatDate(value) {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(`${value}T00:00:00`);
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short'
+    });
+  }
+
+  function getStatusClass(status) {
+    if (status === 'Paid' || status === 'Active') {
+      return 'paid';
+    }
+
+    if (status === 'Overdue' || status === 'At Risk') {
+      return 'overdue';
+    }
+
+    return 'pending';
+  }
+
+  function parseRupees(value) {
+    return Number(String(value).replace(/[^\d.]/g, '')) || 0;
+  }
+
+  function updateAiInsights() {
+    const invoiceRows = Array.from(invoicesTableBody.querySelectorAll('tr'));
+    const insightsTableBody = document.getElementById('insightsTableBody');
+    const recommendedActions = document.getElementById('recommendedActions');
+    const riskScore = document.getElementById('riskScore');
+    const pendingInvoiceCount = document.getElementById('pendingInvoiceCount');
+    const overdueAmountCard = document.getElementById('overdueAmount')
+      || document.querySelector('#insights .cards .card:nth-child(4) p');
+    const insights = [];
+    let pendingCount = 0;
+    let overdueCount = 0;
+    let overdueAmount = 0;
+
+    invoiceRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      const invoiceNumber = cells[0]?.textContent.trim() || '';
+      const vendor = cells[1]?.textContent.trim() || '';
+      const amount = parseRupees(cells[2]?.textContent || '');
+      const dueDate = cells[4]?.textContent.trim() || '';
+      const status = cells[5]?.textContent.trim() || '';
+
+      if (status === 'Overdue') {
+        overdueCount += 1;
+        overdueAmount += amount;
+        insights.push({
+          insight: `Overdue invoice ${invoiceNumber}`,
+          vendor,
+          recommendation: `Send payment reminder for invoice due ${dueDate}`,
+          priority: 'High',
+          className: 'overdue'
+        });
+      }
+
+      if (status === 'Pending') {
+        pendingCount += 1;
+        insights.push({
+          insight: `Pending invoice ${invoiceNumber}`,
+          vendor,
+          recommendation: `Follow up before due date ${dueDate}`,
+          priority: 'Medium',
+          className: 'pending'
+        });
+      }
+    });
+
+    recommendedActions.textContent = `${insights.length} action${insights.length === 1 ? '' : 's'}`;
+    pendingInvoiceCount.textContent = pendingCount;
+    overdueAmountCard.textContent = formatRupees(overdueAmount);
+    riskScore.textContent = overdueCount >= 3 ? 'High' : overdueCount > 0 ? 'Medium' : 'Low';
+
+    if (!insights.length) {
+      insightsTableBody.innerHTML = `
+        <tr>
+          <td>No immediate risk</td>
+          <td>All vendors</td>
+          <td>Continue regular payment tracking</td>
+          <td><span class="status paid">Low</span></td>
+        </tr>
+      `;
+      return;
+    }
+
+    insightsTableBody.innerHTML = insights.map(item => `
+      <tr>
+        <td>${escapeHtml(item.insight)}</td>
+        <td>${escapeHtml(item.vendor)}</td>
+        <td>${escapeHtml(item.recommendation)}</td>
+        <td><span class="status ${item.className}">${escapeHtml(item.priority)}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  function updateDashboard() {
+    const vendorRows = Array.from(document.querySelectorAll('#vendorsTableBody tr'));
+    const invoiceRows = Array.from(document.querySelectorAll('#invoicesTableBody tr'));
+    const totalVendors = document.getElementById('dashboardTotalVendors');
+    const overdueInvoices = document.getElementById('dashboardOverdueInvoices');
+    const pendingPayments = document.getElementById('dashboardPendingPayments')
+      || document.querySelector('#dashboard .cards .card:nth-child(2) p');
+    const paidThisMonth = document.getElementById('dashboardPaidThisMonth')
+      || document.querySelector('#dashboard .cards .card:nth-child(4) p');
+    const dashboardTableBody = document.getElementById('dashboardTableBody');
+    let pendingAmount = 0;
+    let paidAmount = 0;
+    let overdueCount = 0;
+
+    invoiceRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      const amount = parseRupees(cells[2]?.textContent || '');
+      const status = cells[5]?.textContent.trim() || '';
+
+      if (status === 'Paid') {
+        paidAmount += amount;
+      } else {
+        pendingAmount += amount;
+      }
+
+      if (status === 'Overdue') {
+        overdueCount += 1;
+      }
+    });
+
+    totalVendors.textContent = vendorRows.length;
+    overdueInvoices.textContent = overdueCount;
+    pendingPayments.textContent = formatRupees(pendingAmount);
+    paidThisMonth.textContent = formatRupees(paidAmount);
+
+    dashboardTableBody.innerHTML = invoiceRows.slice(-5).reverse().map(row => {
+      const cells = row.querySelectorAll('td');
+      const status = cells[5]?.textContent.trim() || '';
+
+      return `
+        <tr>
+          <td>${escapeHtml(cells[1]?.textContent.trim() || '')}</td>
+          <td>${escapeHtml(cells[0]?.textContent.trim() || '')}</td>
+          <td>${escapeHtml(cells[2]?.textContent.trim() || '')}</td>
+          <td>${escapeHtml(cells[4]?.textContent.trim() || '')}</td>
+          <td><span class="status ${getStatusClass(status)}">${escapeHtml(status)}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function updateNotifications() {
+    const invoiceRows = Array.from(document.querySelectorAll('#invoicesTableBody tr'));
+    const notificationsTableBody = document.getElementById('notificationsTableBody');
+    const notificationTotal = document.getElementById('notificationTotal');
+    const notificationUrgent = document.getElementById('notificationUrgent');
+    const notificationReminders = document.getElementById('notificationReminders');
+    const notifications = [];
+
+    if (!notificationsTableBody || !notificationTotal || !notificationUrgent || !notificationReminders) {
+      return;
+    }
+
+    invoiceRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      const invoiceNumber = cells[0]?.textContent.trim() || '';
+      const vendor = cells[1]?.textContent.trim() || '';
+      const amount = cells[2]?.textContent.trim() || '';
+      const dueDate = cells[4]?.textContent.trim() || '';
+      const status = cells[5]?.textContent.trim() || '';
+
+      if (status === 'Overdue') {
+        notifications.push({
+          type: 'Payment Alert',
+          vendor,
+          message: `${invoiceNumber} for ${amount} is overdue from ${dueDate}. Send follow-up immediately.`,
+          priority: 'Urgent',
+          className: 'overdue'
+        });
+      }
+
+      if (status === 'Pending') {
+        notifications.push({
+          type: 'Payment Reminder',
+          vendor,
+          message: `${invoiceNumber} for ${amount} is pending. Reminder scheduled before ${dueDate}.`,
+          priority: 'Medium',
+          className: 'pending'
+        });
+      }
+    });
+
+    const urgentCount = notifications.filter(item => item.priority === 'Urgent').length;
+    const reminderCount = notifications.filter(item => item.priority === 'Medium').length;
+
+    notificationTotal.textContent = notifications.length;
+    notificationUrgent.textContent = urgentCount;
+    notificationReminders.textContent = reminderCount;
+
+    if (!notifications.length) {
+      notificationsTableBody.innerHTML = `
+        <tr>
+          <td>No alerts</td>
+          <td>All vendors</td>
+          <td>No pending or overdue payment notifications right now.</td>
+          <td><span class="status paid">Low</span></td>
+        </tr>
+      `;
+      return;
+    }
+
+    notificationsTableBody.innerHTML = notifications.map(item => `
+      <tr>
+        <td>${escapeHtml(item.type)}</td>
+        <td>${escapeHtml(item.vendor)}</td>
+        <td>${escapeHtml(item.message)}</td>
+        <td><span class="status ${item.className}">${escapeHtml(item.priority)}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  const addVendorForm = document.getElementById('addVendorForm');
+  const vendorsTableBody = document.getElementById('vendorsTableBody');
+  const vendorResult = document.getElementById('vendorResult');
+
+  addVendorForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const vendorName = document.getElementById('vendorName').value.trim();
+    const vendorContact = document.getElementById('vendorContact').value.trim();
+    const vendorInvoices = document.getElementById('vendorInvoices').value;
+    const vendorBalance = document.getElementById('vendorBalance').value;
+    const vendorStatus = document.getElementById('vendorStatus').value;
+    const statusClass = getStatusClass(vendorStatus);
+
+    vendorsTableBody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${escapeHtml(vendorName)}</td>
+        <td>${escapeHtml(vendorContact)}</td>
+        <td>${escapeHtml(vendorInvoices)}</td>
+        <td>${formatRupees(vendorBalance)}</td>
+        <td><span class="status ${statusClass}">${escapeHtml(vendorStatus)}</span></td>
+      </tr>
+    `);
+
+    vendorResult.textContent = 'Vendor added successfully.';
+    addVendorForm.reset();
+    updateDashboard();
+  });
+
+  const uploadInvoiceForm = document.getElementById('uploadInvoiceForm');
+  const invoicesTableBody = document.getElementById('invoicesTableBody');
+  const invoiceResult = document.getElementById('invoiceResult');
+
+  uploadInvoiceForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const invoiceNumber = document.getElementById('invoiceNumber').value.trim();
+    const invoiceVendor = document.getElementById('invoiceVendor').value.trim();
+    const invoiceAmount = document.getElementById('invoiceAmount').value;
+    const invoiceFile = document.getElementById('invoiceFile').files[0];
+    const invoiceIssueDate = document.getElementById('invoiceIssueDate').value;
+    const invoiceDueDate = document.getElementById('invoiceDueDate').value;
+    const invoiceStatus = document.getElementById('invoiceStatus').value;
+    const statusClass = getStatusClass(invoiceStatus);
+
+    invoicesTableBody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${escapeHtml(invoiceNumber)}</td>
+        <td>${escapeHtml(invoiceVendor)}</td>
+        <td>${formatRupees(invoiceAmount)}</td>
+        <td>${formatDate(invoiceIssueDate)}</td>
+        <td>${formatDate(invoiceDueDate)}</td>
+        <td><span class="status ${statusClass}">${escapeHtml(invoiceStatus)}</span></td>
+      </tr>
+    `);
+
+    invoiceResult.textContent = invoiceFile
+      ? `Invoice uploaded successfully: ${invoiceFile.name}`
+      : 'Invoice added successfully.';
+    uploadInvoiceForm.reset();
+    updateAiInsights();
+    updateDashboard();
+    updateNotifications();
+  });
+
+  updateAiInsights();
+  updateDashboard();
+  updateNotifications();
+
+  const settingsForm = document.getElementById('settingsForm');
+  const settingsResult = document.getElementById('settingsResult');
+
+  // Add refresh button to settings
+  const refreshButton = document.createElement('button');
+  refreshButton.className = 'send-button';
+  refreshButton.style.marginTop = '16px';
+  refreshButton.style.background = '#dc2626';
+  refreshButton.textContent = 'Refresh Dashboard';
+  refreshButton.type = 'button';
+  refreshButton.addEventListener('click', () => location.reload());
+  settingsForm.parentElement.appendChild(refreshButton);
+
+  settingsForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const notifications = [
+      document.getElementById('notifyEmail').checked ? 'Email' : '',
+      document.getElementById('notifySms').checked ? 'SMS' : '',
+      document.getElementById('notifyDashboard').checked ? 'Dashboard' : ''
+    ].filter(Boolean);
+    const settings = {
+      email: document.getElementById('settingsEmail').value.trim(),
+      company: document.getElementById('settingsCompany').value.trim(),
+      reminderDays: document.getElementById('settingsReminder').value,
+      paymentMethod: document.getElementById('settingsPaymentMethod').value,
+      apiAccess: document.getElementById('settingsApiAccess').value,
+      dataRetention: document.getElementById('settingsDataRetention').value,
+      notifications: notifications.length ? notifications.join(', ') : 'None'
+    };
+
+    sessionStorage.setItem('vendorChaseSettings', JSON.stringify(settings));
+    settingsResult.innerHTML = `
+      Settings saved successfully.<br>
+      Email: ${escapeHtml(settings.email)} | Company: ${escapeHtml(settings.company)}<br>
+      Reminder: ${escapeHtml(settings.reminderDays)} days | Payment: ${escapeHtml(settings.paymentMethod)} | API: ${escapeHtml(settings.apiAccess)}
+    `;
+  });
+
+  const smsForm = document.getElementById('smsForm');
+  const receiverNumberInput = document.getElementById('receiverNumber');
+  const smsMessageInput = document.getElementById('smsMessage');
+  const sendSmsButton = document.getElementById('sendSmsButton');
+  const smsResult = document.getElementById('smsResult');
+
+  receiverNumberInput.addEventListener('input', function() {
+    this.value = this.value.replace(/[^\d,\s]/g, '');
+  });
+
+  smsForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const receiverNumbers = receiverNumberInput.value
+      .split(/[\s,]+/)
+      .map(number => number.replace(/\D/g, ''))
+      .filter(Boolean);
+    const message = smsMessageInput.value.trim();
+
+    smsResult.className = 'sms-result';
+
+    if (receiverNumbers.some(number => !/^\d{10}$/.test(number))) {
+      smsResult.textContent = 'Please enter valid 10 digit mobile numbers only.';
+      smsResult.classList.add('error');
+      return;
+    }
+
+    if (!receiverNumbers.length) {
+      smsResult.textContent = 'Please enter at least one mobile number.';
+      smsResult.classList.add('error');
+      return;
+    }
+
+    if (!message) {
+      smsResult.textContent = 'Please enter a message.';
+      smsResult.classList.add('error');
+      return;
+    }
+
+    sendSmsButton.disabled = true;
+    sendSmsButton.textContent = 'Sending...';
+    smsResult.textContent = '';
+
+    try {
+      const response = await fetch('http://localhost:3000/send-sms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          receiverNumbers,
+          message
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        smsResult.textContent = `Message sent to ${data.sent || 0} mobile number(s).`;
+        smsResult.classList.add('success');
+        smsForm.reset();
+      } else {
+        smsResult.textContent = data.error || 'Unable to send message.';
+        smsResult.classList.add('error');
+      }
+    } catch (error) {
+      smsResult.textContent = 'Start the server on port 3000 before sending SMS.';
+      smsResult.classList.add('error');
+    } finally {
+      sendSmsButton.disabled = false;
+      sendSmsButton.textContent = 'Send Message';
+    }
+  });
+
+  // Logo page transition
+  window.addEventListener('load', () => {
+    const logoPage = document.getElementById('logoPage');
+    const mainApp = document.getElementById('mainApp');
+
+    // Show logo for 3 seconds, then transition to dashboard
+    setTimeout(() => {
+      logoPage.classList.add('hidden');
+      setTimeout(() => {
+        logoPage.style.display = 'none';
+        mainApp.classList.remove('hidden');
+      }, 1000); // Wait for fade-out animation
+    }, 3000);
+  });
+</script>
+
+</body>
+</html>
